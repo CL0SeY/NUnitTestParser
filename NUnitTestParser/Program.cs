@@ -11,7 +11,7 @@ namespace NUnitTestParser
 {
     class Program
     {
-        static List<KeyValuePair<string, double>> TestFixtures = new List<KeyValuePair<string, double>>();
+        static readonly List<KeyValuePair<string, double>> TestFixtures = new List<KeyValuePair<string, double>>();
         static void Main(string[] args)
         {
             if (args.Length != 1)
@@ -28,12 +28,14 @@ namespace NUnitTestParser
             {
                 Console.WriteLine("{0} - {1}", result.Key, result.Value);
             }
+            Console.ReadKey();
         }
 
         private static void ListTests(XElement results, string prefix)
         {
-            foreach (XElement thing in results.Nodes().Where(n => n is XElement))
+            foreach (var xNode in results.Nodes().Where(n => n is XElement))
             {
+                var thing = (XElement) xNode;
                 var name = prefix;
                 if (thing.Name == "test-suite")
                 {
@@ -48,6 +50,33 @@ namespace NUnitTestParser
                         if (time != null)
                         {
                             TestFixtures.Add(new KeyValuePair<string, double>(name, Double.Parse(time)));
+                        }
+                        else
+                        {
+                            double computedTime = 0;
+                            foreach (var xNode1 in thing.Nodes().Where(n => n is XElement))
+                            {
+                                var tests = (XElement) xNode1;
+                                if (tests.Name == "results")
+                                {
+                                    foreach (var xNode2 in tests.Nodes().Where(n => n is XElement))
+                                    {
+                                        var testCase = (XElement) xNode2;
+                                        if (testCase.Name == "test-case")
+                                        {
+                                            var testTime = GetAttribute(testCase, "time");
+                                            if (testTime != null)
+                                            {
+                                                computedTime += Double.Parse(testTime);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (computedTime > 0)
+                            {
+                                TestFixtures.Add(new KeyValuePair<string, double>(name, computedTime));
+                            }
                         }
                     }
                 }
