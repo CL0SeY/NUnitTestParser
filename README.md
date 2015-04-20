@@ -1,4 +1,4 @@
-# NUnitTestParser
+# Nunit Fixture Duration Sorter
 Little tool to show you which test fixtures are taking up the most time
 
 ```
