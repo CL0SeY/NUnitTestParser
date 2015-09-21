@@ -56,36 +56,40 @@ namespace NUnitTestParser
                     }
                     else
                     {
-                        var time = GetAttribute(thing, "time");
-                        if (time != null)
+                        var attribute = GetAttribute(thing, "type");
+                        if (attribute != "ParameterizedMethod")
                         {
-                            TestFixtures.Add(new KeyValuePair<string, double>(name, Double.Parse(time)));
-                        }
-                        else
-                        {
-                            double computedTime = 0;
-                            foreach (var xNode1 in thing.Nodes().Where(n => n is XElement))
+                            var time = GetAttribute(thing, "time");
+                            if (time != null)
                             {
-                                var tests = (XElement) xNode1;
-                                if (tests.Name == "results")
+                                TestFixtures.Add(new KeyValuePair<string, double>(name, Double.Parse(time)));
+                            }
+                            else
+                            {
+                                double computedTime = 0;
+                                foreach (var xNode1 in thing.Nodes().Where(n => n is XElement))
                                 {
-                                    foreach (var xNode2 in tests.Nodes().Where(n => n is XElement))
+                                    var tests = (XElement) xNode1;
+                                    if (tests.Name == "results")
                                     {
-                                        var testCase = (XElement) xNode2;
-                                        if (testCase.Name == "test-case")
+                                        foreach (var xNode2 in tests.Nodes().Where(n => n is XElement))
                                         {
-                                            var testTime = GetAttribute(testCase, "time");
-                                            if (testTime != null)
+                                            var testCase = (XElement) xNode2;
+                                            if (testCase.Name == "test-case")
                                             {
-                                                computedTime += Double.Parse(testTime);
+                                                var testTime = GetAttribute(testCase, "time");
+                                                if (testTime != null)
+                                                {
+                                                    computedTime += Double.Parse(testTime);
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            if (computedTime > 0)
-                            {
-                                TestFixtures.Add(new KeyValuePair<string, double>(name, computedTime));
+                                if (computedTime > 0)
+                                {
+                                    TestFixtures.Add(new KeyValuePair<string, double>(name, computedTime));
+                                }
                             }
                         }
                     }
