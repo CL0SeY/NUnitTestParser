@@ -28,7 +28,6 @@ namespace NUnitTestParser
             {
                 Console.WriteLine("{0} - {1}", result.Key, result.Value);
             }
-            Console.ReadKey();
         }
 
         private static void ListTests(XElement results, string prefix)
