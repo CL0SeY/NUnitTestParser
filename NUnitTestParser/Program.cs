@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -17,6 +19,15 @@ namespace NUnitTestParser
             if (args.Length != 1)
             {
                 Console.WriteLine("Usage: NUnitTestParser.exe <nunit-2-results-xml-file>");
+                return;
+            }
+            if (args.First() == "/version")
+            {
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+                string version = fileVersionInfo.ProductVersion;
+
+                Console.WriteLine("Version: {0}", version);
                 return;
             }
             var doc = XDocument.Load(new FileStream(args[0], FileMode.Open),LoadOptions.None);
